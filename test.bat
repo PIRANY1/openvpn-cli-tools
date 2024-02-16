@@ -71,3 +71,21 @@ git clone https://github.com/PIRANY1/DataSpammer %cd%
 echo Downloaded
 set "setupaftgitcl=1"
 main.bat
+
+
+
+echo "Enter a menu option in the Keyboard [1,2,3,4,5,6,7,8,0] :"
+choice /C:123456780 /N
+set _erl=%errorlevel%
+if %_erl%==9 exit /b
+if %_erl%==8 cls | goto 
+if %_erl%==7 cls | goto 
+if %_erl%==6 cls | goto 
+if %_erl%==5 cls | goto 
+if %_erl%==4 cls | goto 
+if %_erl%==3 cls | goto 
+if %_erl%==2 cls | goto 
+if %_erl%==1 cls | goto 
+goto :MainMenu
+
+setlocal & call :_Check_Status_wmi & cls & endlocal & goto :MainMenu
