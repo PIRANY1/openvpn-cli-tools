@@ -29,7 +29,32 @@ set "-= "
 ::Checks if the OpenVPN GUI Executable exists.
 if not exist "C:\Program Files\OpenVPN\bin\openvpn-gui.exe" goto :installation-not-found
 set "startuptimeend=%time%"
+
+:: Checks if the Config already exists and if not creates one
+if exist "%USERPROFILE%\Documents\OpenVPN-CLI-Tools\config.txt" (goto config-exists) else (goto create-config)
+
+:create-config
+cd /d %USERPROFILE%\Documents\
+mkdir OpenVPN-CLI-Tools
+cd /d OpenVPN-CLI-Tools
+echo Test > config.txt
+echo Added Config File to: "%USERPROFILE%\Documents\OpenVPN-CLI-Tools\"
+echo Moving Script to: "%USERPROFILE%\Documents\OpenVPN-CLI-Tools\"
+cd /d %~dp0
+xcopy main.bat %USERPROFILE%\Documents\OpenVPN-CLI-Tools\ /q /y
+cd /d %USERPROFILE%\Documents\OpenVPN-CLI-Tools\
+
+:: Extracts Data from Config, if avaiable
+:config-exists
+set /p config=<config.txt
+echo %config%
+pause
+
 goto main
+:: ------------
+:: Startup Done
+:: ------------
+
 
 :: Checks if the Script is elevated when called
 :checkelev
@@ -52,12 +77,15 @@ echo             [5] Check for Updates
 echo.            
 echo             [6] Open the Github-Repo
 echo.            
-echo             [7] Exit
+echo             [7] Delete Script
+echo. 
+echo             [8] Exit
 echo. 
 echo             Enter a menu option in the Keyboard [1,2,3,4,5,6,7] :
 choice /C 1234567 /N
 set _erl=%errorlevel%
-if %_erl%==7 exit /b 0
+if %_erl%==8 exit /b 0
+if %_erl%==7 cls & goto delete-script
 if %_erl%==6 start "" "https://github.com/PIRANY1/openvpn-cli-tools" & cls % goto main 
 if %_erl%==5 setlocal & call check-updates & cls & endlocal & goto :main
 if %_erl%==4 cls & goto settings
@@ -79,5 +107,11 @@ goto main
 :settings
 
 :installation-not-found
+echo The Script couldnt found the OpenVPN installation.
+echo Please add the Path to the OpenVPN-gui.exe manually
+echo It can look something like C:\Program Files\OpenVPN\bin\openvpn-gui.exe
+set /p openvpn-exe=Enter the Path:
+
+:delete-script
 
 exit /b 0
