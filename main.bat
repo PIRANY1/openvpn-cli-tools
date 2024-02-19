@@ -37,20 +37,22 @@ if exist "%USERPROFILE%\Documents\OpenVPN-CLI-Tools\config.txt" (goto config-exi
 cd /d %USERPROFILE%\Documents\
 mkdir OpenVPN-CLI-Tools
 cd /d OpenVPN-CLI-Tools
-echo Test > config.txt
+echo :: This File was created by OpenVPN-CLI-Tools. It may be valuable if you used OpenVPN-CLI-Tools once. > config.txt
 echo Added Config File to: "%USERPROFILE%\Documents\OpenVPN-CLI-Tools\"
 echo Moving Script to: "%USERPROFILE%\Documents\OpenVPN-CLI-Tools\"
 cd /d %~dp0
 xcopy main.bat %USERPROFILE%\Documents\OpenVPN-CLI-Tools\ /q /y
 cd /d %USERPROFILE%\Documents\OpenVPN-CLI-Tools\
+goto config-exists
 
 :: Extracts Data from Config, if avaiable
 :config-exists
+cd /d %USERPROFILE%\Documents\OpenVPN-CLI-Tools\
 set /p config=<config.txt
 echo %config%
-pause
-
+@ping -n 2 localhost> nul
 goto main
+
 :: ------------
 :: Startup Done
 :: ------------
@@ -64,7 +66,10 @@ goto :EOF
 
 :: Main Part
 :main
+cls
 @title OpenVPN-CLI-Tool
+echo             OpenVPN-CLI-Tools
+echo.
 echo             [1] Info
 echo.         
 echo             [2] Add to Path
@@ -113,5 +118,45 @@ echo It can look something like C:\Program Files\OpenVPN\bin\openvpn-gui.exe
 set /p openvpn-exe=Enter the Path:
 
 :delete-script
+echo Are you Sure you want to delete the Script?
+choice /C yn /M "Press Y to continue or N to go back:"
+set _erl=%errorlevel%
+if %_erl%==y goto delete-script-confirmed
+if %_erl%==n goto main
+goto delete-script
+
+:delete-script-confirmed
+set "autostart-delete=Not Defined"
+set "path-link-delete=Not defined"
+
+:delete-script-select
+cls
+title Delete OpenVPN-CLI-Tools
+echo Do you want to Delete any Installed Features too?
+echo. 
+echo             [1] Autstart (%path-link-delete%)
+echo.
+echo             [2] Add to Path (%autostart-delete%)
+echo.
+echo             [3] Continue
+echo.
+choice /C 123 /M Choose which Features to delete by Pressing 1 and/or 2 and 3 to Continue:
+set _erl=%errorlevel%
+if %_erl%==3 cls & goto delete-script-selected
+if %_erl%==2 cls & goto path-include
+if %_erl%==1 cls & goto autostart-include
+
+:autostart-include
+cls
+set "autostart-select-status=Included"
+set "autstart-delete=1"
+goto delete-script-select
+
+:path-include
+cls
+set "path-select-status=Included"
+set "path-delete=1"
+goto delete-script-select
+
 
 exit /b 0
