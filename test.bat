@@ -1,3 +1,6 @@
+
+CALL %0\..\main.bat
+
 :: checks for updates in a non existent settings textfile :/
 :under-construction
 echo Checking for Data...

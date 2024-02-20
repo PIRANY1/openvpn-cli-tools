@@ -4,10 +4,14 @@
 :: Some Startup Stuff (yk)
 cls
 @echo off
+@color 02
+::Sets the Directory to the right one after Elevated
+pushd "%~dp0"
+::Screen Stuff
+mode con: cols=76 lines=30
 set "scriptstart=%time%"
 @title Starting Up...
 echo Starting Up...
-@color 02
 @setlocal enableextensions ENABLEDELAYEDEXPANSION 
 
 :: Checks if the Script is started by a debug Script
@@ -28,7 +32,12 @@ set "-= "
 
 ::Checks if the OpenVPN GUI Executable exists.
 if not exist "C:\Program Files\OpenVPN\bin\openvpn-gui.exe" goto :installation-not-found
-set "startuptimeend=%time%"
+
+
+:: Checks if the Script is elevated
+:checkelev
+net session >nul 2>&1
+if %errorLevel% == 0 ( set "elevated=1" ) else ( set "elevated=0")
 
 :: Checks if the Config already exists and if not creates one
 if exist "%USERPROFILE%\Documents\OpenVPN-CLI-Tools\config.txt" (goto config-exists) else (goto create-config)
@@ -51,6 +60,11 @@ cd /d %USERPROFILE%\Documents\OpenVPN-CLI-Tools\
 set /p config=<config.txt
 echo %config%
 @ping -n 2 localhost> nul
+
+
+
+
+set "startuptimeend=%time%"
 goto main
 
 :: ------------
@@ -58,17 +72,13 @@ goto main
 :: ------------
 
 
-:: Checks if the Script is elevated when called
-:checkelev
-net session >nul 2>&1
-if %errorLevel% == 0 ( set "elevated=1" )
-goto :EOF
-
 :: Main Part
 :main
 cls
 @title OpenVPN-CLI-Tool
-echo             OpenVPN-CLI-Tools
+%$Echo% "              __   __   ___            __           __            ___  __   __        __  
+%$Echo% "             /  \ |__) |__  |\ | \  / |__) |\ | __ /  ` |    | __  |  /  \ /  \ |    /__` 
+%$Echo% "             \__/ |    |___ | \|  \/  |    | \|    \__, |___ |     |  \__/ \__/ |___ .__/
 echo.
 echo             [1] Info
 echo.         
@@ -87,11 +97,11 @@ echo.
 echo             [8] Exit
 echo. 
 echo             Enter a menu option in the Keyboard [1,2,3,4,5,6,7] :
-choice /C 1234567 /N
+choice /C 12345678 /N
 set _erl=%errorlevel%
-if %_erl%==8 exit /b 0
+if %_erl%==8 cls & echo OpenVPN-Tools exited with Code 0 & exit /b 0
 if %_erl%==7 cls & goto delete-script
-if %_erl%==6 start "" "https://github.com/PIRANY1/openvpn-cli-tools" & cls % goto main 
+if %_erl%==6 explorer https://github.com/PIRANY1/openvpn-cli-tools & cls % goto main 
 if %_erl%==5 setlocal & call check-updates & cls & endlocal & goto :main
 if %_erl%==4 cls & goto settings
 if %_erl%==3 cls & goto autostart
@@ -116,18 +126,19 @@ echo The Script couldnt found the OpenVPN installation.
 echo Please add the Path to the OpenVPN-gui.exe manually
 echo It can look something like C:\Program Files\OpenVPN\bin\openvpn-gui.exe
 set /p openvpn-exe=Enter the Path:
-
+or
 :delete-script
 echo Are you Sure you want to delete the Script?
 choice /C yn /M "Press Y to continue or N to go back:"
 set _erl=%errorlevel%
-if %_erl%==y goto delete-script-confirmed
-if %_erl%==n goto main
+if %_erl% == y goto delete-script-confirmed
+if %_erl% == n goto main
 goto delete-script
 
 :delete-script-confirmed
 set "autostart-delete=Not Defined"
 set "path-link-delete=Not defined"
+goto delete-script-select
 
 :delete-script-select
 cls
