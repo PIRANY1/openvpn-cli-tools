@@ -130,9 +130,9 @@ or
 :delete-script
 echo Are you Sure you want to delete the Script?
 choice /C yn /M "Press Y to continue or N to go back:"
-set _erl=%errorlevel%
-if %_erl% == y goto delete-script-confirmed
-if %_erl% == n goto main
+set _erl1=%errorlevel%
+if %_erl1% == y goto delete-script-confirmed
+if %_erl1% == n goto main
 goto delete-script
 
 :delete-script-confirmed
